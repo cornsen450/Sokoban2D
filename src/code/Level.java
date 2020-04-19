@@ -1,6 +1,5 @@
 package code;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -17,15 +16,19 @@ public class Level {
     private ArrayList<Target> targets;
     private Player player;
     private DrawFrame drawFrame;
+    private DrawLabel drawLabel;
 
-    private int steps = 0;
-    private int finishedTargets = 0;
+    public int lvldata = 1;
+
+    private int steps = 0;;
+    private int solved = 0;
 
     private int width = 0;
     private int height = 0;
 
 
-    public Level() throws IOException {
+    public Level(int lvldata) throws IOException {
+        this.lvldata = lvldata;
         initLevel();
         DrawFrame drawFrame = new DrawFrame(this);
         this.drawFrame = drawFrame;
@@ -47,12 +50,11 @@ public class Level {
     public void initLevel() throws IOException {
 
         world = new ArrayList<>();
-
         walls = new ArrayList<>();
         boxes = new ArrayList<>();
         targets = new ArrayList<>();
 
-        LevelReader levelReader = new LevelReader("lvl1.txt");
+        LevelReader levelReader = new LevelReader("lvl"+lvldata+".txt");
 
 
         Wall wall;
@@ -68,6 +70,15 @@ public class Level {
         for(int i = 0; i < lvl.length; i++){
             for(int j = 0; j< lvl[i].length; j++){
                 switch(lvl[i][j]) {
+                    case ('*'):
+                        target = new Target(x,y);
+                        box = new Box(x,y);
+                        box.onTarget();
+                        targets.add(target);
+                        boxes.add(box);
+
+                        x += SPACE;
+                        break;
                     case ('@'):
                         player = new Player(x,y);
                         x += SPACE;
@@ -119,18 +130,8 @@ public class Level {
     }
 
     public void restartLevel() throws IOException {
-        world.clear();
-        walls.clear();
-        targets.clear();
-        walls.clear();
-        this.steps = 0;
-        this.finishedTargets = 0;
-        initLevel();
-        //Wird nur einmal geschlossen?=!
         drawFrame.dispose();
-        DrawFrame drawFrame = new DrawFrame(this);
-        this.drawFrame = drawFrame;
-
+        Level level = new Level(lvldata);
 
     }
 
@@ -143,11 +144,27 @@ public class Level {
         this.steps = this.steps + steps;
     }
 
-    public int getFinishedTargets() {
-        return finishedTargets;
+    public boolean checkWin() {
+
+        int w = 0;
+
+        for (int i = 0; i < boxes.size(); i++) {
+            Box box = boxes.get(i);
+            if (box.isSolved() == true) {
+                w += 1;
+            }
+        }
+        if (w == targets.size()) {
+            return true;
+        }else return false;
+
     }
 
-    public void setFinishedTargets(int finishedTargets) {
-        this.finishedTargets = finishedTargets;
+    public void nextLevel() throws IOException {
+        lvldata += 1;
+        restartLevel();
+
     }
+
+
 }

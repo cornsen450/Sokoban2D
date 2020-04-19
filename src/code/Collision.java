@@ -8,10 +8,12 @@ public class Collision {
 
     private Player player;
     private Level level;
+    private ArrayList<Target> targets;
 
     public Collision(Level level) {
         this.level = level;
         this.player = level.getPlayer();
+        this.targets = level.getTargets();
     }
 
 
@@ -80,8 +82,8 @@ public class Collision {
         return false;
     }
 
-
     public boolean checkBoxCollision(char direction) {
+
 
         switch (direction) {
 
@@ -108,8 +110,11 @@ public class Collision {
                             }
 
                         }
-
                         box.move(-level.SPACE, 0);
+                        if(checkTargetCollision(box)) {
+                            box.onTarget();
+                        } else box.notOnTarget();
+
                     }
                 }
 
@@ -138,8 +143,11 @@ public class Collision {
                             }
 
                         }
-
                         box.move(level.SPACE, 0);
+                        if(checkTargetCollision(box)) {
+                            box.onTarget();
+                        } else box.notOnTarget();
+
                     }
                 }
 
@@ -168,8 +176,10 @@ public class Collision {
                             }
 
                         }
-
                         box.move(0, -level.SPACE);
+                        if(checkTargetCollision(box)) {
+                            box.onTarget();
+                        } else box.notOnTarget();
                     }
                 }
 
@@ -180,6 +190,7 @@ public class Collision {
                 for (int i = 0; i < level.getBoxes().size(); i++) {
 
                     Box box = level.getBoxes().get(i);
+
 
                     if (player.isBottomCollision(box)) {
 
@@ -200,14 +211,31 @@ public class Collision {
                         }
 
                         box.move(0, level.SPACE);
+
+                        if(checkTargetCollision(box)) {
+                            box.onTarget();
+                        } else box.notOnTarget();
+
                     }
                 }
         }
 
         return false;
+
     }
 
+    public boolean checkTargetCollision(Box box ) {
 
+        for (int i = 0; i < targets.size(); i++) {
+
+            Target target = targets.get(i);
+
+            if (box.getX() == target.getX() && box.getY() == target.getY()) {
+                return true;
+            }
+        } return false;
+
+    }
 
 
 }

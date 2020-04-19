@@ -1,11 +1,8 @@
 package code;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.awt.event.KeyEvent;
 
 
@@ -19,6 +16,7 @@ public class DrawFrame extends JFrame implements KeyListener {
     private Level lvl;
 
 
+
     public DrawFrame(Level lvl) throws IOException {
         Collision collision = new Collision(lvl);
         this.collision = collision;
@@ -29,13 +27,10 @@ public class DrawFrame extends JFrame implements KeyListener {
         setResizable(false);
         setSize(this.lvl.getLevelWidth()+lvl.OFFSET,this.lvl.getLevelHeight()+lvl.SPACE);
         setLocationRelativeTo(null);
-        setTitle("Sokoban");
-
-
+        setTitle("Sokoban Level " + lvl.lvldata);
         drawLabel = new DrawLabel(lvl);
         drawLabel.setBounds(0,0,lvl.getLevelWidth(),lvl.getLevelHeight());
         add(drawLabel);
-
         setVisible(true);
     }
 
@@ -49,6 +44,10 @@ public class DrawFrame extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if (lvl.checkWin() == true) {
+            return;
+        }
+
         int key = e.getKeyCode();
 
         switch (key) {
@@ -96,16 +95,9 @@ public class DrawFrame extends JFrame implements KeyListener {
                 }
                 lvl.getPlayer().move(0, lvl.SPACE);
                 lvl.setSteps(1);
-                break;
-
-            case KeyEvent.VK_R:
-                try {
-                    lvl.restartLevel();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
 
                 break;
+
 
             default:
                 break;
@@ -115,10 +107,41 @@ public class DrawFrame extends JFrame implements KeyListener {
 
 
 
+
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+
+        int key = e.getKeyCode();
+
+        switch (key) {
+
+            case KeyEvent.VK_R:
+                try {
+                    lvl.restartLevel();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
+                break;
+        }
+
+        switch (key) {
+
+            case KeyEvent.VK_ENTER:
+                if (lvl.checkWin() == true) {
+                    try {
+                        lvl.nextLevel();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+
+                break;
+        }
+
+
 
     }
 
